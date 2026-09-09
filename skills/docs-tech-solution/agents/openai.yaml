@@ -1,0 +1,7 @@
+interface:
+  display_name: "技术方案文档生成"
+  short_description: "根据代码事实生成接口、数据、迁移与架构调整的设计概要文档"
+  default_prompt: "使用 $docs-tech-solution 根据已确认需求和代码事实生成设计概要文档。"
+
+policy:
+  allow_implicit_invocation: false

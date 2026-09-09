@@ -1,0 +1,7 @@
+interface:
+  display_name: "Java Coding Li"
+  short_description: "Java 编码、设计、测试与审查规范"
+  default_prompt: "使用 $java-coding-li 编写或审查这次 Java 代码改动。"
+
+policy:
+  allow_implicit_invocation: true
