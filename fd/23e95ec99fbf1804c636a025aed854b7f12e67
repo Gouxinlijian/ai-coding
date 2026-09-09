@@ -1,0 +1,22 @@
+README.md
+  s_1baba8db8f51d3::t_92b2237202c4f4 36-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "fd23e95ec99fbf1804c636a025aed854b7f12e67",
+  "prompts": {},
+  "sessions": {
+    "s_1baba8db8f51d3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a084fe-cc41-7cf1-8818-944c1d6ebe8c",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
