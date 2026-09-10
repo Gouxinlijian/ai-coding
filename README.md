@@ -5,6 +5,7 @@
 ## 仓库内容
 
 - `AGENTS.md`：Codex 全局工作约定，包括执行原则、Java 技能路由、验证范围和 CodeGraph 使用规则。
+- `INSTALL.md`：供 Codex、Claude、CodeBuddy 自动安装本仓库全局规则和 `java-coding-li` skill 的说明。
 - `skills/java-coding-li`：Java 编码、设计、测试与代码审查规范。
 - `skills/docs-tech-solution`：设计概要类技术文档生成技能。
 - `skills/service-overview`：后端服务概览与新人上手文档生成技能。
@@ -27,11 +28,13 @@ ai-coding/
 
 ## 使用方式
 
-使用前先审查目标环境中的现有配置，避免直接覆盖本地修改：
+在已打开本仓库的 Codex、Claude 或 CodeBuddy 会话中发送：
 
-1. 将 `AGENTS.md` 合并或复制到 Codex 配置目录中的 `AGENTS.md`。
-2. 将需要的完整技能目录复制到 Codex 的 `skills/` 目录。
-3. 重新启动任务或会话，使新的规则和技能被重新加载。
+```text
+请查看 INSTALL.md，并严格按其中与当前客户端匹配的步骤，为当前用户安装全局规则和 java-coding-li skill。
+```
+
+AI 会先询问用户称呼，再自行完成拉取、备份、安装和校验。
 
 ## 源版本约定
 
