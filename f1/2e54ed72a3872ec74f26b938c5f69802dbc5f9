@@ -1,0 +1,32 @@
+AGENTS.md
+  s_1baba8db8f51d3::t_06aa5b5d43a7ef 6,22,24
+skills/java-coding-li/references/coding-habit-template.md
+  s_1baba8db8f51d3::t_01a69a33b28894 154
+skills/java-coding-li/references/testing-and-review.md
+  s_1baba8db8f51d3::t_16f9e3674eec12 24
+  s_1baba8db8f51d3::t_d664a43ffe32b3 25-26
+skills/java-coding-li/SKILL.md
+  s_1baba8db8f51d3::t_4bc67a32c2d2e2 24
+  s_1baba8db8f51d3::t_06aa5b5d43a7ef 27,37
+  s_1baba8db8f51d3::t_d664a43ffe32b3 15-18
+  s_1baba8db8f51d3::t_16f9e3674eec12 28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "f12e54ed72a3872ec74f26b938c5f69802dbc5f9",
+  "prompts": {},
+  "sessions": {
+    "s_1baba8db8f51d3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a084fe-cc41-7cf1-8818-944c1d6ebe8c",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
