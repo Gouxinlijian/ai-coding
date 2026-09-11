@@ -1,0 +1,22 @@
+docs/local/代码规范/2026-09-11-coding-skills-design.md
+  s_1baba8db8f51d3::t_fde539526b125d 1-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "8b9a96575278c4ec0f90cc70bcf649d49be3773c",
+  "prompts": {},
+  "sessions": {
+    "s_1baba8db8f51d3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a084fe-cc41-7cf1-8818-944c1d6ebe8c",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
