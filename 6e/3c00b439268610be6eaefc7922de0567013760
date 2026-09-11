@@ -1,0 +1,44 @@
+skills/csharp-coding-guide/agents/openai.yaml
+  s_1baba8db8f51d3::t_3bc4aa2a014554 1-7
+AGENTS.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 18-26
+skills/java-coding-guide/SKILL.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 1-48
+skills/java-coding-guide/agents/openai.yaml
+  s_1baba8db8f51d3::t_3bc4aa2a014554 1-7
+skills/csharp-coding-guide/references/exception-and-logging.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 1-32
+skills/csharp-coding-guide/references/persistence-and-security.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 1-31
+skills/csharp-coding-guide/SKILL.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 1-48
+skills/csharp-coding-guide/references/testing-and-review.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 1-38
+README.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 7-10,20,23,25,37
+INSTALL.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 3,24,32-33,38-39,54-55,61,63
+skills/csharp-coding-guide/references/coding-and-design.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 1-33
+skills/csharp-coding-guide/references/coding-habit-template.md
+  s_1baba8db8f51d3::t_3bc4aa2a014554 1-121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "6e3c00b439268610be6eaefc7922de0567013760",
+  "prompts": {},
+  "sessions": {
+    "s_1baba8db8f51d3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a084fe-cc41-7cf1-8818-944c1d6ebe8c",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
