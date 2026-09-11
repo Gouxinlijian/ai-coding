@@ -4,9 +4,10 @@
 
 ## 仓库内容
 
-- `AGENTS.md`：Codex 全局工作约定，包括执行原则、Java 技能路由、验证范围和 CodeGraph 使用规则。
-- `INSTALL.md`：供 Codex、Claude、CodeBuddy 自动安装本仓库全局规则和 `java-coding-li` skill 的说明。
-- `skills/java-coding-li`：Java 编码、设计、测试与代码审查规范。
+- `AGENTS.md`：全局工作约定，包括执行原则、Java/C# 技能路由、文档输出位置、验证范围和 CodeGraph 使用规则。
+- `INSTALL.md`：供 Codex、Claude、CodeBuddy 自动安装本仓库全局规则及编码 skill 的说明。
+- `skills/java-coding-guide`：Java 编码、设计、测试与代码审查规范。
+- `skills/csharp-coding-guide`：C#/.NET 编码、设计、测试与代码审查规范。
 - `skills/docs-tech-solution`：设计概要类技术文档生成技能。
 - `skills/service-overview`：后端服务概览与新人上手文档生成技能。
 - `skills/query-service-config`：服务实际生效配置的检测、拉取、合并和说明技能。
@@ -16,10 +17,12 @@
 ```text
 ai-coding/
 |-- AGENTS.md
+|-- INSTALL.md
 |-- README.md
 `-- skills/
+    |-- csharp-coding-guide/
     |-- docs-tech-solution/
-    |-- java-coding-li/
+    |-- java-coding-guide/
     |-- query-service-config/
     `-- service-overview/
 ```
@@ -31,7 +34,7 @@ ai-coding/
 在已打开本仓库的 Codex、Claude 或 CodeBuddy 会话中发送：
 
 ```text
-请查看 INSTALL.md，并严格按其中与当前客户端匹配的步骤，为当前用户安装全局规则和 java-coding-li skill。
+请查看 INSTALL.md，并严格按其中与当前客户端匹配的步骤，为当前用户安装全局规则和编码 skill。
 ```
 
 AI 会先询问用户称呼，再自行完成拉取、备份、安装和校验。

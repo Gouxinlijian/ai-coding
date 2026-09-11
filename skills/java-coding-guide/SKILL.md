@@ -1,11 +1,11 @@
 ---
-name: java-coding-li
+name: java-coding-guide
 description: 编写、修改或审查 Java 代码时使用的工程规范，覆盖代码设计、命名、异常日志、并发、数据库、安全、测试和生产级可靠性。纯文档阅读、普通排障或不涉及 Java 代码判断的问答不使用。
 metadata:
   short-description: Java 编码与审查规范
 ---
 
-# Java Coding Li
+# Java Coding Guide
 
 在新增、修改或审查 Java 代码前应用本技能。先理解项目现有实现，再以最小影响完成需求；不得为了套用规范而重构无关存量代码。
 

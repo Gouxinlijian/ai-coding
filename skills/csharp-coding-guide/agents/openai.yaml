@@ -1,0 +1,7 @@
+interface:
+  display_name: "C# Coding Guide"
+  short_description: "C#/.NET 编码、设计、测试与审查规范"
+  default_prompt: "使用 $csharp-coding-guide 编写或审查这次 C# 代码改动。"
+
+policy:
+  allow_implicit_invocation: true
