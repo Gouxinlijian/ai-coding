@@ -1,0 +1,26 @@
+skills/java-coding-guide/references/testing-and-review.md
+  s_1baba8db8f51d3::t_4a1aca8db10a65 18
+skills/java-coding-guide/SKILL.md
+  s_1baba8db8f51d3::t_4a1aca8db10a65 27
+.gitignore
+  s_1baba8db8f51d3::t_174b0df833248d 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "3f81c48049e034785f53036980cde3de6a94068f",
+  "prompts": {},
+  "sessions": {
+    "s_1baba8db8f51d3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a084fe-cc41-7cf1-8818-944c1d6ebe8c",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
