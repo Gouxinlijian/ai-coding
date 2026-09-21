@@ -1,0 +1,25 @@
+skills/java-coding-guide/references/coding-and-design.md
+  s_6b5f14aef1f272::t_124e9ed22ffa37 5-11,18-19,23,28-34
+skills/java-coding-guide/references/coding-habit-template.md
+  s_6b5f14aef1f272::t_ad9e9b1bcb3193 35,37
+  s_6b5f14aef1f272::t_dd7f66817081c5 3,5,7-10,13-16,19,21-26,28,30,32,34,36,39,41,43-44,46-49,51,53,55,57,59,61,63,65,67-74,76,78,80,82,84,86,88,90,92,94-101,103,105-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "9a27f1cbbc468f96610ba9fac9b8c8f247ed2d7f",
+  "prompts": {},
+  "sessions": {
+    "s_6b5f14aef1f272": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0b238-17c4-7d31-93fe-217a6e957b81",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
