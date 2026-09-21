@@ -25,24 +25,28 @@ metadata:
 - 新增、修改或重构 Java 代码时，以编码习惯模板作为默认落地风格；当项目已有明确且不同的局部约定时保持项目一致，并且不得为了统一风格改写无关存量代码。
 - 修改公共契约、持久化结构或并发流程时检查生产者、消费者、兼容性和失败路径。
 - Java 代码修改完成后，必须说明是否建议新增或更新单元测试及原因，并询问用户是否需要生成或更新；用户确认后再修改测试文件。
-- 完成后按改动风险确定最小验证方案，但不主动执行编译、测试或构建验证。说明推荐的最小验证命令、验证目的和预期影响后，询问用户是否执行；只有得到用户明确确认才可运行。Maven `-pl ... -am`、测试跳过开关调整、全量构建、`package`、`install`、耗时任务或访问外部环境必须单独说明。
+- 完成后按改动风险确定最小验证方案，但不主动执行编译、测试或构建验证。说明推荐的最小验证命令、验证目的和预期影响后，询问用户是否执行；只有得到用户明确确认才可运行。多模块构建、测试跳过开关、全量构建、`package`/`install`、耗时任务或访问外部环境的细节见[测试、验证与代码审查](references/testing-and-review.md)。
 - 工具或验证失败必须明确报告，不得静默跳过。
 
 ## 按需加载规则
 
-- 新增、修改或重构 Java 代码，以及审查代码是否符合编码规范时，必须读取 [coding-habit-template.md](references/coding-habit-template.md)。
-- 编写或重构业务代码、设计类和方法、处理集合、时间或并发时，读取 [coding-and-design.md](references/coding-and-design.md)。
-- 涉及异常、日志、RPC、MQ、缓存、异步或可靠性时，读取 [exception-and-logging.md](references/exception-and-logging.md)。
-- 涉及数据库、MyBatis、事务、接口契约、权限或输入安全时，读取 [persistence-and-security.md](references/persistence-and-security.md)。
-- 新增或修改测试、执行已获确认的验证、或进行代码审查时，读取 [testing-and-review.md](references/testing-and-review.md)。
+| 触发场景 | 必读文件 |
+| --- | --- |
+| 改动或审查任何 Java 代码 | [coding-habit-template.md](references/coding-habit-template.md) |
+| 类与方法设计、集合、时间 | [coding-and-design.md](references/coding-and-design.md) |
+| 相等、包装类型、精度、集合陷阱、日期、空值 | [language-correctness.md](references/language-correctness.md) |
+| 线程、锁、线程池、异步编排、可见性、性能 | [concurrency.md](references/concurrency.md) |
+| 异常、日志、RPC、MQ、缓存、异步可靠性 | [exception-and-logging.md](references/exception-and-logging.md) |
+| 数据库、MyBatis、事务、契约、权限、输入安全 | [persistence-and-security.md](references/persistence-and-security.md) |
+| 测试、已获确认的验证、代码审查 | [testing-and-review.md](references/testing-and-review.md) |
 
-同时涉及多个场景时读取对应的多个引用，不加载无关章节。
+同时涉及多个场景时读取对应多个引用，不加载无关章节。
 
 ## 不变约束
 
 - 不新增无职责的 Service、Manager、Facade、Strategy、Factory、Context、Handler、DTO 或工具类。
-- 不为单次字段赋值、简单分支、参数转发或单次读写拆出碎片方法。
-- 不因无关需求删除、缩减、改写现有日志，或调整其级别和打印逻辑。
-- 不直接修改可重新生成的代码；修改生成源、协议、模板或生成配置。
-- 不为测试扩大生产方法可见性，也不通过反射直接测试私有实现。
-- 临时代码标记统一使用 `TODO -Li：`，不得新增无归属的裸 `TODO`。
+- 不为单次字段赋值、简单分支、参数转发或单次读写拆碎片方法。
+- 不因无关需求删改现有日志或调整其级别与打印逻辑。
+- 不直接修改可重新生成的代码；只改生成源、协议、模板或生成配置。
+- 不为测试扩大生产方法可见性，也不反射直测私有实现。
+- 临时代码统一用 `TODO(负责人)：` + 处理计划，不新增无归属的裸 `TODO`。
