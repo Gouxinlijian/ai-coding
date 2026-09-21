@@ -1,182 +1,107 @@
 # Java 编码习惯模板
 
-本模板定义 AI 编写 Java 代码时的默认落地风格。它提炼自常见 Spring Boot 项目的工程实践，但不复制历史代码中的缺陷。项目已有明确约定时优先保持项目一致；多个方案都正确时，优先选择本模板的写法。
+本文件只保留日常写法和阅读习惯，不绑定某个项目的业务类、私有依赖或基础框架。
 
-## 总体风格
+## 流程编排（第一原则）
 
-- 先复用同包代码、项目工具、常量、枚举、Repo、Converter 和公共协议，不另造同义实现。
-- 简单逻辑直接内联；只有完整、稳定且命名清晰的业务步骤才抽取方法。
-- 普通转换可以使用 Stream；包含状态修改、异常分支、外部调用或多个副作用时，优先使用普通 `if`/`for`。
-- 注释使用简短中文，说明业务阶段、特殊规则或原因。不要逐行翻译代码，也不要生成大段模板化 JavaDoc。
-- 不为了“更优雅”改变无关代码、日志、返回协议、异常语义或现有调用层次。
-
-## 类内顺序
-
-默认按以下顺序组织，新代码不要让 public 和 private 方法无规律穿插：
-
-1. 静态常量。
-2. 依赖字段和成员字段。
-3. 构造器或依赖注入。
-4. public 方法，重载方法相邻。
-5. protected 方法。
-6. private 方法，按照主流程首次调用顺序排列。
-7. 必要的内部类或内部枚举。
-
-同一个类只围绕一个职责或一组高度内聚的用例。类较大不是单独拆分类的理由，但出现无关变化原因、独立事务边界或独立外部能力时应拆分。
-
-## 业务入口模板
-
-入口方法使用卫语句减少嵌套，主体从上到下体现真实业务顺序。至少存在三个不易从调用名称识别的业务阶段时，使用简短编号注释作为目录；简单方法不机械编号。
+- 入口像业务目录，从上到下呈现“校验 → 数据准备 → 核心处理 → 结果返回”。
+- 入口和关键 public 方法使用连续编号注释，说明每个真实业务步骤；没有的步骤不补空壳。
+  简单 Controller 委托不机械添加四步注释。
+- 步骤编号是阅读目录；其他注释说明业务规则、原因、边界或妥协，不逐行翻译代码。
 
 ```java
-public ExampleResponse execute(ExampleRequest request) {
-    // 1. 校验业务前置条件
-    ExampleEntity entity = exampleRepo.findById(request.getId());
-    validateExecutable(entity);
-
-    // 2. 准备本次处理数据
-    ExecuteContext context = buildExecuteContext(entity, request);
-
-    // 3. 执行核心业务并保存结果
-    applyExecution(entity, context);
-    exampleRepo.update(entity);
-
-    // 4. 完成事务外动作
-    publishResult(entity, context);
-    return convertResponse(entity);
-}
+// 1. 校验导入内容并收集错误行
+// 2. 批量查询已有记录
+// 3. 分别保存新增和变更记录
+// 4. 返回导入结果
 ```
 
-模板不是要求把每一步都抽成方法。单次查询、简单赋值、简单判断和一次性转换直接放在主流程中；`validateExecutable`、`buildExecuteContext` 等方法必须对应完整且稳定的业务步骤。
+以上只示意注释写法，具体步骤按实际业务填写，不要求每个步骤都抽成方法。
 
-## 命名习惯
+- public 负责编排，private 承载完整稳定的步骤；调用者在前，辅助方法按调用顺序靠近主流程。
+  重载方法相邻，不让同一业务在多个碎片方法之间反复跳转。
+- 日志拼装、复杂转换和异常兜底不频繁打断主线；细节只有形成完整能力时才抽取。
+- 只使用一次、表达式清晰的中间变量直接内联；表达业务含义、避免重复计算或提升可读性时保留。
+  不把所有单次使用变量机械内联，也不按变量名黑名单替代语义判断。
+- 用空行分隔不同逻辑块；只清理本次改动产生的无用变量、import 和注释掉的代码。
 
-- 类、方法、字段严格使用标准 Java 大小写：类名 UpperCamelCase，方法和字段 lowerCamelCase，常量 UPPER_SNAKE_CASE。
-- 方法名优先使用能表达结果或动作的准确动词，例如 `validate`、`build`、`convert`、`save`、`update`、`sync`、`publish`、`remove`。
-- 不使用 `extracted`、`handlePre`、`processData`、`doSomething`、`getResult` 等脱离上下文后无法判断职责的名称。
-- 提交前检查英文拼写，特别是 `update`、`header`、`robot`、`cron`、`response` 等常用词。
-- 布尔变量表达肯定语义，例如 `enabled`、`matched`、`completed`，避免 `flag`。
-- 同一概念沿用项目已有词汇，不为同一个动作创造多个近义词。
+## B. 代码模板
 
-## Spring Boot 条件模板
+以下模板只表达通用结构，实际类型、注解和组件沿用项目现有能力。
 
-以下模板仅在项目已经使用对应框架或组件时采用，不为套模板引入 Spring、Lombok、Swagger、MapStruct、MyBatis 或新的公共返回协议。
+### 1. Controller：校验 → Service → 返回
 
-### Controller
-
-Controller 保持轻量：边界校验、调用 Service、返回项目协议。不要在 Controller 中承载数据库查询、复杂转换或业务状态决策。
-
-```java
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/examples")
-public class ExampleController {
-
-    private final ExampleService exampleService;
-
-    @PostMapping
-    public ExampleResponse create(@Validated @RequestBody ExampleCreateRequest request) {
-        return exampleService.create(request);
-    }
+~~~java
+public ApiResponse<Void> add(@RequestBody @Validated AddRequestDto request) {
+    service.add(request);
+    return ApiResponse.success();
 }
-```
+~~~
 
-- 项目已有 Swagger/OpenAPI 时补齐现有体系要求的 Controller、方法和模型字段注解。
+### 2. Service + Impl：依赖注入 + 流程编排 + 步骤注释
 
-### Service
+~~~java
+private final XxxRepo xxxRepo;
 
-- public 方法展示业务流程，事务边界由业务一致性决定。
-- 数据准备、状态判断、保存和后置动作按真实顺序排列，避免在多层回调或复杂 Stream 中隐藏主线。
-- 方法过长时按稳定业务能力拆分，不按行数切成 `step1`、`step2` 或无语义 helper。
-- 同一流程需要积累日志、任务、标签等批量数据时，先在内存中完成准备，再使用项目已有批量接口统一处理。
-
-依赖优先使用构造器注入和 `final` 字段：
-
-```java
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class ExampleServiceImpl implements ExampleService {
-
-    private final ExampleRepo exampleRepo;
-    private final ExampleConvert exampleConvert;
-
-    @Override
-    public ExampleResponse getById(Long id) {
-        ExampleEntity entity = exampleRepo.findById(id);
-        return exampleConvert.convert(entity);
-    }
+public void add(AddRequestDto request) {
+    // 1. 校验并准备数据
+    // 2. 保存主数据
+    // 3. 处理关联数据
 }
-```
+~~~
 
-只有项目确实依赖无参构造、框架限制或循环迁移等原因时才沿用字段注入，不新增大写开头的依赖字段。
+### 3. 事务方法：边界与批量落库顺序
 
-### Repo 与 Mapper
+事务注解、回滚范围和边界沿用项目现有事务配置；方法内按校验、准备、批量落库、后置处理编排。
 
-- Repo 封装明确的数据访问能力和查询条件；Service 决定状态、模式、租户、开关等业务规则。
-- Mapper 只接收已经确定的查询参数，不通过 `mode`、`flag` 等参数代替 Service 的业务判断。
-- 查询为空时按照现有契约返回空集合、空分页或 `Optional`，不要随意混用 `null`。
+### 4. Convert 层：自动映射与手工转换
 
-```java
-public List<ExampleEntity> findEnabledByIds(Collection<Long> ids) {
-    if (CollectionUtils.isEmpty(ids)) {
-        return Collections.emptyList();
-    }
+常规字段映射复用已有 Convert；包含业务分支、枚举选择或关联组装时使用手工转换。
 
-    return list(new LambdaQueryWrapper<ExampleEntity>()
-            .in(ExampleEntity::getId, ids)
-            .eq(ExampleEntity::getEnabled, Boolean.TRUE));
+### 5. 查询封装：Repo + 参数对象 Builder
+
+多条件内部查询沿用已有参数对象和 Builder，只填本次需要的条件；Repo 按条件是否存在追加查询。
+
+### 6. 批量导入：校验过滤 → 批量落库 → 后置处理
+
+~~~java
+rows = checkAndFilter(rows, errors);
+if (CollectionUtils.isEmpty(rows)) {
+    return errors;
 }
-```
+repo.updateBatchById(updateList);
+repo.insertBatch(insertList);
+~~~
 
-### Converter 与 DTO
+### 7. 并发与锁：沿用项目现有机制
 
-- 项目已有 MapStruct 时，将稳定的对象边界转换集中在 Converter；不要在多个 Service 中重复复制字段。
-- 转换包含查询、权限判断或状态迁移时留在 Service，不把业务行为塞入 MapStruct 表达式。
-- 请求 DTO 在系统边界使用 Bean Validation 表达必填、范围和格式；复杂跨字段规则使用命名清楚的校验方法或项目已有校验器。
-- Builder 用于字段较多、构造过程需要表达业务含义的 DTO 或上下文对象；简单可变实体按业务阶段设置字段即可。
-- 只有字段、生命周期、权限或接口契约确有差异时新增 DTO/BO/VO，不复制同构模型。
+先检查锁、幂等键、唯一约束和版本控制等已有能力；沿用现有机制的获取、超时判断和释放方式，不新增私有锁注解或组件。
 
-## 生产流程习惯
+### 8. 异常：沿用项目业务异常体系
 
-- 复杂写流程优先按“校验身份与权限、确定操作范围、获取必要锁、执行原子事务、安排事务后动作、返回结果、清理资源”的顺序展开。
-- 长耗时流程优先按“固化任务快照、异步推进状态、可靠投递、失败补偿”的方式保持同一业务口径；定时任务入口继续线性展示抢占、执行、更新和清理。
-- 批量流程先整理输入，再批量查询并建立索引，随后在内存中完成业务处理，最后批量写入或调用外部能力；响应顺序有契约时显式保持顺序。
-- 锁、时间与模式选择的细节遵循 [编码与设计](coding-and-design.md)，事务、状态、快照与权限遵循 [持久化、事务与安全](persistence-and-security.md)，消息与补偿遵循 [异常、日志与可靠性](exception-and-logging.md)。
+业务校验失败使用项目已有业务异常和错误码；批量处理按项目约定收集错误或终止流程。
 
-## 不复制的历史写法
+### 9. 日志：引用专题规则
 
-即使在参考项目中看到，也不得作为默认编码习惯继续生成：
+日志格式、级别、现场信息和异常堆栈统一遵循 exception-and-logging.md，本模板不重复定义。
 
-- 大写开头的字段名、通配符 import、拼写错误和无语义方法名。
-- 每次请求创建可复用的重量对象，或在业务代码中通过静态工具临时获取 Spring Bean。
-- 一个 Service 长期混合互不相关的业务、定时调度、外部适配和数据访问职责。
-- 不为减少主方法行数制造碎片方法，也不为形式补充作者日期、长篇 JavaDoc、逐行注释或没有处理计划的 TODO；相关约束以本技能的不变约束和编码与设计引用为准。
+### 10. 工具类与常量
 
-## 单元测试模板
+优先复用项目已有能力、JDK、已有依赖、常量和枚举；只有存在独立职责和稳定复用边界时才抽取公共方法或工具类。
 
-测试通过 public/protected 入口验证业务结果、状态变化或异常，方法名表达可观察行为。Mock 交互只用于证明关键副作用或没有发生危险调用，不能代替业务断言；完整测试规则以测试与审查引用为准。
+## 简洁写法的边界
 
-```java
-@RunWith(MockitoJUnitRunner.class)
-public class ExampleServiceImplTest {
+- 同一概念沿用已有业务词汇和动词；方法名表达真实动作，不新增含糊的 `processData`、`doXxx`。
+- 简单过滤、映射和收集可以使用 Stream；多个副作用、复杂分支或外部调用优先用普通 if/for。
+  不用多层 Lambda 或 `peek` 隐藏业务动作。
+- 已知非空的对象直接使用，不套 `Optional.of(...).orElse(...)`；Optional 不替代明确的边界校验。
+- 在可信边界完成校验后不重复兜底；新来源或业务允许为空的数据仍按契约处理。
+  不用返回空集合或默认值掩盖实际业务失败。
+- 用卫语句减少深层嵌套，但不为减少缩进抽取跳板方法。
+- JavaDoc 只补充签名看不出的契约和边界，不复述方法名；不主动添加类头作者、日期。
 
-    @Mock
-    private ExampleRepo exampleRepo;
+## 专题规则
 
-    @InjectMocks
-    private ExampleServiceImpl exampleService;
-
-    @Test
-    public void shouldReturnEmptyResultWhenNoDataMatches() {
-        when(exampleRepo.findEnabled()).thenReturn(Collections.emptyList());
-
-        List<ExampleResponse> result = exampleService.findEnabled();
-
-        assertTrue(result.isEmpty());
-        verify(exampleRepo, never()).loadDetails(anyCollection());
-    }
-}
-```
-
-测试框架、断言库和 Mock 风格沿用项目现状，不为统一模板迁移 JUnit 版本。
+- 抽象边界、Java 正确性和性能：[编码与设计](coding-and-design.md)。
+- 异常捕获、日志、重试和异步可靠性：[异常、日志与可靠性](exception-and-logging.md)。
+- 测试和验证：[测试、验证与代码审查](testing-and-review.md)。
