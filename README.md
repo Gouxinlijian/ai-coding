@@ -5,7 +5,7 @@
 ## 仓库内容
 
 - `AGENTS.md`：全局工作约定，包括执行原则、Java/C# 技能路由、文档输出位置、验证范围和 CodeGraph 使用规则。
-- `INSTALL.md`：供 Codex、Claude、CodeBuddy 自动安装本仓库全局规则及编码 skill 的说明。
+- `INSTALL.md`：供 Codex、Claude、CodeBuddy、Qoder 自动安装本仓库全局规则及编码 skill 的说明。
 - `skills/java-coding-guide`：Java 编码、设计、测试与代码审查规范。
 - `skills/csharp-coding-guide`：C#/.NET 编码、设计、测试与代码审查规范。
 - `skills/docs-tech-solution`：设计概要类技术文档生成技能。
@@ -31,17 +31,25 @@ ai-coding/
 
 ## 使用方式
 
-在已打开本仓库的 Codex、Claude 或 CodeBuddy 会话中发送：
+在已打开本仓库的 Codex、Claude、CodeBuddy 或 Qoder 会话中发送：
 
 ```text
-请查看 INSTALL.md，并严格按其中与当前客户端匹配的步骤，为当前用户安装全局规则和编码 skill。
+请查看 INSTALL.md，并严格按其中与当前客户端匹配的步骤，为当前用户安装全局规则以及以下 skill：java-coding-guide、csharp-coding-guide。
 ```
 
 AI 会先询问用户称呼，再自行完成拉取、备份、安装和校验。
 
+如需只安装部分 skill，把命令中的 skill 列表替换为实际需要的名称，例如：
+
+```text
+请查看 INSTALL.md，并按 CodeBuddy 的步骤为我安装全局规则和 java-coding-guide。
+```
+
+平台名可按实际客户端替换为 Codex、Claude、CodeBuddy 或 Qoder；未指定平台时，由 AI 根据当前客户端自动匹配对应章节。
+
 ## 源版本约定
 
-本仓库是个人 Codex 与 Claude 技能的唯一源版本。技能改动应先提交到 `skills/` 对应目录，再同步到本地工具目录；不要直接编辑本机的 Codex 或 Claude 技能副本。
+本仓库是个人 Codex、Claude、CodeBuddy 与 Qoder 技能的唯一源版本。技能改动应先提交到 `skills/` 对应目录，再同步到本地工具目录；不要直接编辑本机的各客户端技能副本。
 
 ## 公开维护要求
 

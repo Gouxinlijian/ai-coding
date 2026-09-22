@@ -1,6 +1,6 @@
 # 安装说明
 
-本文件用于指导 Codex、Claude 或 CodeBuddy 为当前用户安装本仓库的全局规则、`java-coding-guide` 和 `csharp-coding-guide` skill。根据当前运行的客户端，只执行对应章节；不要同时修改其他客户端的配置。
+本文件用于指导 Codex、Claude、CodeBuddy 或 Qoder 为当前用户安装本仓库的全局规则、`java-coding-guide` 和 `csharp-coding-guide` skill。根据当前运行的客户端，只执行对应章节；不要同时修改其他客户端的配置。
 
 ## 执行前确认
 
@@ -54,6 +54,12 @@
 3. 将完整 `skills/java-coding-guide/` 与 `skills/csharp-coding-guide/` 分别安装到 `~/.codebuddy/skills/java-coding-guide/` 和 `~/.codebuddy/skills/csharp-coding-guide/`。
 4. 校验全局规则：除 CodeBuddy frontmatter 和 `USER_TITLE` 替换外，其余内容与源 `AGENTS.md` 一致；递归校验两个 skill 的每个文件 SHA-256 与源目录一致。
 
+## Qoder
+
+1. 将处理过称呼替换的全局规则安装为 Qoder 用户级规则 `~/.qoder/rules/AGENTS.md`；`~/.qoder/rules/` 目录不存在时先创建。
+2. 将完整 `skills/java-coding-guide/` 与 `skills/csharp-coding-guide/` 分别安装到 `~/.qoder/skills/java-coding-guide/` 和 `~/.qoder/skills/csharp-coding-guide/`，每个 skill 的入口为目录下的 `SKILL.md`。
+3. 校验目标全局规则除 `USER_TITLE` 替换外与源 `AGENTS.md` 一致；递归校验两个 skill 的每个文件 SHA-256 与源目录一致。
+
 ## 生效方式
 
 安装完成后，安装 AI 必须告知用户按当前客户端执行以下操作：
@@ -61,6 +67,7 @@
 - **Codex**：结束当前任务并新建一个任务或会话；新会话会重新加载全局 `AGENTS.md` 和已安装 skill。若新会话中未识别 `java-coding-guide` 或 `csharp-coding-guide`，完全退出并重新打开 Codex 后再新建会话。
 - **Claude**：结束当前对话并新建对话或重新启动 Claude；在新对话中再请求 Java 代码编写、修改或审查，使其重新加载 `CLAUDE.md` 和 skill。
 - **CodeBuddy**：新建一个聊天会话。若新会话仍未加载规则或发现 skill，重启 CodeBuddy 后新建会话；然后询问“当前应用了哪些规则和 skill？”确认 `global-workflow`、`java-coding-guide` 与 `csharp-coding-guide` 已生效。
+- **Qoder**：结束当前会话并新建会话；在 Qoder 的规则设置中确认 `AGENTS.md` 规则已启用并设为有效，再请求 Java 或 C# 代码编写、修改或审查，使其重新加载规则和 skill。若新会话中未识别 `java-coding-guide` 或 `csharp-coding-guide`，重启 Qoder 后新建会话。
 
 不得声称当前已打开的会话会自动加载刚安装的规则或 skill。
 
