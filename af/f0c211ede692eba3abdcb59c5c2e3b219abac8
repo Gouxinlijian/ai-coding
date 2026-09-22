@@ -1,0 +1,29 @@
+README.md
+  s_f451cbdbf88e8f::t_6428119bad934f 52
+  s_f451cbdbf88e8f::t_56ddeaad81e576 8
+  s_f451cbdbf88e8f::t_fc5080c5ec40f3 34,37,42-48
+  s_f451cbdbf88e8f::t_1830864b0609ad 49
+INSTALL.md
+  s_f451cbdbf88e8f::t_3437ffdaa5baee 70
+  s_f451cbdbf88e8f::t_54016231d445e8 57-62
+  s_f451cbdbf88e8f::t_bcb5cf54e747c8 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "aff0c211ede692eba3abdcb59c5c2e3b219abac8",
+  "prompts": {},
+  "sessions": {
+    "s_f451cbdbf88e8f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ccba568ab4e1499d8b10740585864b4a",
+        "model": "deepseek-v4-pro"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
