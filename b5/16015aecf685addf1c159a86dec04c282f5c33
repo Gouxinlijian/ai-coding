@@ -1,0 +1,103 @@
+skills/java-coding-guide/references/human-style-examples.md
+  s_f451cbdbf88e8f::t_a1974f75acfcef 69,91-93
+  s_f451cbdbf88e8f::t_d0de824847d300 70-90
+  s_f451cbdbf88e8f::t_bc11a64a4a69ff 1-68
+skills/java-coding-guide/references/exception-and-logging.md
+  s_f451cbdbf88e8f::t_6265b4e940d273 23
+  s_f451cbdbf88e8f::t_3c6327060e059a 32
+  s_f451cbdbf88e8f::t_d424132e584d67 34-42
+  s_f451cbdbf88e8f::t_6ac563331104f4 15,17,21-22,24-31
+  s_f451cbdbf88e8f::t_30db73be9d695c 33
+skills/java-coding-guide/references/coding-and-design.md
+  s_f451cbdbf88e8f::t_17bbdd019d5a74 20
+  s_f451cbdbf88e8f::t_787a2e28a5e492 30-40
+  s_f451cbdbf88e8f::t_5e20512295bf79 19
+  s_f451cbdbf88e8f::t_adbbf9fb73ba9d 18
+  s_1baba8db8f51d3::t_9044abbbf373b0 13
+skills/java-coding-guide/CHANGELOG.md
+  s_f451cbdbf88e8f::t_6bc0b85f82839f 11-15
+  s_f451cbdbf88e8f::t_ee6a0fa6f32705 4,7-10
+  s_f451cbdbf88e8f::t_66baa17e33cfac 1-2
+  s_f451cbdbf88e8f::t_166ca6ca56ae17 3,5-6
+  s_f451cbdbf88e8f::t_15a0089357057a 16-20
+skills/java-coding-guide/SKILL.md
+  s_f451cbdbf88e8f::t_cc9eee6d4e7923 27
+  s_f451cbdbf88e8f::t_952049577582b5 23
+  s_f451cbdbf88e8f::t_ccd71ef0efd61a 30-31
+  s_f451cbdbf88e8f::t_15fc3c26afc29a 5
+  s_f451cbdbf88e8f::t_f9e90d00c611f2 15-19,21,32-34
+  s_f451cbdbf88e8f::t_17634f3efc59ea 36-41
+  s_f451cbdbf88e8f::t_2dcf6d1f4b7939 45-47,49-55
+  s_f451cbdbf88e8f::t_3c47004c91b605 61
+  s_f451cbdbf88e8f::t_bfeac5348520d3 28
+  s_f451cbdbf88e8f::t_087b56241ef36e 22
+  s_f451cbdbf88e8f::t_309ff1f0d16fc5 29
+  s_f451cbdbf88e8f::t_5864967540c2fd 35
+  s_1baba8db8f51d3::t_e031b1a4cbff49 3
+skills/java-coding-guide/references/concurrency.md
+  s_f451cbdbf88e8f::t_2fb053a26c9ae9 12,20,47-51
+  s_f451cbdbf88e8f::t_42b3a521458a1c 45-46
+  s_f451cbdbf88e8f::t_9f26dcb36c8c18 11
+  s_f451cbdbf88e8f::t_83c17470bdd9f9 13-15,17-19
+  s_f451cbdbf88e8f::t_ac3af4716dcc37 21
+skills/java-coding-guide/references/persistence-and-security.md
+  s_f451cbdbf88e8f::t_3280958f341895 33-34
+  s_f451cbdbf88e8f::t_95472789bfb2a6 9-18,56
+  s_f451cbdbf88e8f::t_8581ebd9b26ab7 21-27
+  s_f451cbdbf88e8f::t_786d094f556e2d 35-36
+  s_f451cbdbf88e8f::t_ba2856f6c65559 41
+skills/java-coding-guide/references/testing-and-review.md
+  s_f451cbdbf88e8f::t_80ee3e4ccaa7f6 61-62,71-72
+  s_f451cbdbf88e8f::t_36053915b2104e 74-87
+  s_f451cbdbf88e8f::t_63783f277b3b07 63-67
+  s_f451cbdbf88e8f::t_6f9638da210b2c 68-69
+  s_f451cbdbf88e8f::t_2fd6eeb24272ab 16-33,70
+  s_1baba8db8f51d3::t_b18ad17a52e743 51
+skills/java-coding-guide/references/coding-habit-template.md
+  s_f451cbdbf88e8f::t_dc88abe6824e4d 28
+  s_f451cbdbf88e8f::t_69a76eab46be73 26-27
+  s_f451cbdbf88e8f::t_10d7574bc4296e 63
+  s_f451cbdbf88e8f::t_f98fd1af62c263 43-44
+  s_f451cbdbf88e8f::t_020cbd9b0c8274 21-22
+  s_f451cbdbf88e8f::t_67de23a2cbadbf 3,17-19,69,71,73
+  s_f451cbdbf88e8f::t_8abe25660aa415 45,48,52,78
+  s_f451cbdbf88e8f::t_6af0cc3168f6fe 49-51,53
+  s_f451cbdbf88e8f::t_8282fe1a83547a 75-76
+  s_f451cbdbf88e8f::t_0e90e3e2f610b3 5,7-11,16,40,58-62,64-65,72
+  s_f451cbdbf88e8f::t_b1022ce501a899 15,25,32,36,41-42,74
+  s_f451cbdbf88e8f::t_aa93d38775f753 23-24
+  s_f451cbdbf88e8f::t_577a66733f5e38 30-31
+  s_f451cbdbf88e8f::t_7e984dbdcd7afc 20
+  s_f451cbdbf88e8f::t_d437f605015349 29
+  s_1baba8db8f51d3::t_63960917e636ad 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "b516015aecf685addf1c159a86dec04c282f5c33",
+  "prompts": {},
+  "sessions": {
+    "s_1baba8db8f51d3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a084fe-cc41-7cf1-8818-944c1d6ebe8c",
+        "model": "unknown"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    },
+    "s_f451cbdbf88e8f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ccba568ab4e1499d8b10740585864b4a",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
