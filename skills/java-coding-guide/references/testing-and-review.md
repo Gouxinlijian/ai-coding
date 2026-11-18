@@ -13,6 +13,24 @@
 - 时间、随机数、外部系统和并发调度应有稳定边界，但不为简单代码增加多余抽象。
 - 测试框架、目录、命名、Mock 方式和集成测试策略沿用项目现状，不固定 JUnit 版本或模板。
 
+```java
+@Test
+void shouldRejectWhenBalanceInsufficient() {
+    // given
+    Account account = Account.builder().balance(new BigDecimal("10.00")).build();
+
+    // when
+    BizException exception = assertThrows(BizException.class,
+            () -> accountService.withdraw(account.getId(), new BigDecimal("20.00")));
+
+    // then
+    assertEquals(ErrorCode.INSUFFICIENT_BALANCE.getCode(), exception.getCode());
+    verify(accountRepository, never()).update(any());
+}
+```
+
+命名表达可观察行为；断言业务结果、状态或异常；`verify(never())` 只用于证明危险写入未发生，并配合业务断言。
+
 ## 何时补测试
 
 - 修改业务规则、边界条件、错误处理、事务、并发、序列化或已有测试覆盖的行为时，说明是否建议新增或更新测试并询问用户；用户确认后再实施。
@@ -30,7 +48,7 @@
 
 ## 代码审查顺序
 
-按以下优先级给出可操作问题。格式类问题优先利用项目现有 formatter、Checkstyle 和 CI，但仍须完成[编码习惯模板的变更范围风格自检](coding-habit-template.md#变更范围风格自检)；工具未配置或未执行不免除新增、修改代码的排版责任：
+按以下优先级给出可操作问题。格式类问题优先利用项目现有 formatter、Checkstyle 和 CI，但仍须完成编码习惯模板中的「变更范围风格自检」；工具未配置或未执行不免除新增、修改代码的排版责任：
 
 1. 正确性：空值、边界、状态转换、异常语义、资源释放。
 2. 数据一致性：事务、唯一约束、幂等、消息与数据库一致性。
@@ -40,4 +58,30 @@
 6. 性能：N+1、循环 I/O、执行计划、资源上限和可观测证据。
 7. 可维护性：主线是否清楚、职责是否内聚、抽象是否必要、命名和注释是否准确简短。
 
+### AI 生成代码的常见问题
+
+- 注释逐行复述代码、机械编号、只有注释没有代码的空壳阶段；章节横幅、空壳 JavaDoc、镜像注释。
+- 泛化命名 `data`/`result`/`temp`/`item`/`config`/`value`；用 `Manager`/`Handler`/`Base`/`Abstract`/`Factory`/`Processor` 等后缀掩盖空职责（项目已有分层命名除外）。
+- 重复判空、对可信输入再校验、`assert` 守卫不可能状态、层层 try-catch、每个方法都打日志。
+- 只调用一次的两三行碎片方法、只做转发的私有方法、`step1`/`step2` 式命名。
+- 过度 Builder / Convert / 策略 / 分层，或缺少字段注释、DTO/VO 后缀不一致；没人要求的边界兜底、一个常量硬做成 config。
+- 结构性缺失：注解 SQL 绕开 XML；事务或编排方法只在末尾一条“完成”日志，入口、流转、条件更新 0 行、异常前都没记录。
+- 绕开既有能力：为挂 `@Qualifier` 手工写构造器且未声明；字段一一对应的 DTO↔VO 手写 setter 而项目已有 `BeanUtil`/MapStruct。
+- 未超过项目行宽（默认 160）却主动折行，或把单个实参折到下一行。
+- 注释密度过高、逐行翻译代码，或写猜测性注释。
+
 审查结论必须关联具体文件和行号，说明触发条件、后果和可行修复方向。没有发现问题时明确说明剩余测试缺口或风险。
+
+## 交付前自检
+
+改完后逐项判定 `通过 / 已修正 / 不适用（原因）`，不得因“功能已通过”跳过；交付说明附 3~5 行结论。
+
+- 持久层：SQL 在 mapper XML 而非注解；`namespace`、`id`、`#{}` 与接口和 `@Param` 一致，且 `mapper-locations` 覆盖；状态流转和计数变更带条件并校验影响行数。
+- 日志：按[异常、日志与可靠性](exception-and-logging.md)的最小集核对，只打末尾一条“完成”视为未通过。
+- 注入与转换：Lombok 项目用 `@RequiredArgsConstructor`，多 Bean 用字段级 `@Qualifier`；Convert 逐方法判定，同构用 `BeanUtil`。
+- 事务与异步：事务只包本地写，事件在提交后触发，重试有上限，线程池有界且异常有日志。
+- 无预留：枚举值、错误码、字段、配置项都有入口或调用方。
+- 口径：时间来源、计数规则、删除级联与开工前定义一致。
+- 风格：执行编码习惯模板的「变更范围风格自检」。
+
+扫描辅助核对：`grep -rnE "@(Select|Update|Insert|Delete)\("`、`grep -rn "@Transactional"`、超长行；命中需逐条解释。

@@ -8,6 +8,17 @@
 - 简单数值增减、递增计数使用原子类而非 `synchronized` + 普通 `int`；组合字段或多步操作原子性需锁或更高层原语。
 - `synchronized` 锁定对象明确且稳定，锁内不调用外部未知代码，避免死锁；锁粒度与持有时间尽量小。
 - `volatile` 保证可见性但不保证原子性；`++`、check-then-act 等复合操作不得依赖 `volatile`。
+
+```java
+// 反例：volatile 不保证 count++ 原子
+private volatile int count;
+count++;
+
+// 正例：计数用 AtomicInteger
+private final AtomicInteger count = new AtomicInteger();
+count.incrementAndGet();
+```
+
 - 双检锁单例字段必须 `volatile`，或用枚举、静态内部类等更简方式。
 
 ## 并发容器与 ThreadLocal
@@ -31,6 +42,13 @@
 - 异步链必须显式处理异常（`exceptionally`/`handle`/`whenComplete`），不得让异常被静默吞掉或导致任务悬挂。
 - 异步回调/线程池中需要 Trace、MDC、租户等上下文时显式传递或包装，不得依赖 `ThreadLocal` 隐式传播。
 - 明确异步结果是否需要等待、超时和取消；`Future` 超时使用带超时的 `get` 并处理 `TimeoutException` 与中断。
+- 同类内部调用 `@Async` 方法不经过 Spring 代理，异步不生效；异步方法放到独立 Bean，或直接使用 `TaskExecutor`。
+
+```java
+// 反例：同类调用不经过代理，异步不生效
+public void handle() { asyncSend(); }
+@Async public void asyncSend() { ... }
+```
 
 ## 锁与乐观并发（与持久化协作）
 
