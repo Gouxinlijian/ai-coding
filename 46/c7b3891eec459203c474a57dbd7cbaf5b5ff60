@@ -1,0 +1,22 @@
+skills/java-coding-guide/CHANGELOG.md
+  s_f451cbdbf88e8f::t_d112b1d546d5a3 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "46c7b3891eec459203c474a57dbd7cbaf5b5ff60",
+  "prompts": {},
+  "sessions": {
+    "s_f451cbdbf88e8f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ccba568ab4e1499d8b10740585864b4a",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
