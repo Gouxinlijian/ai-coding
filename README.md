@@ -1,16 +1,12 @@
 # ai-coding
 
-用于维护和公开分享 Codex 工作规则与自定义技能的版本库。仓库不包含业务应用代码，主要用于对 AI 编码规范、文档工作流和服务分析工具进行版本管理、审查与分发。
+用于维护和公开分享 AI 助手工作规则与自定义技能的版本库。仓库不包含业务应用代码，主要用于规则的版本管理、审查与分发；可用技能清单以 `skills/` 目录为准。
 
 ## 仓库内容
 
-- `AGENTS.md`：全局工作约定，包括执行原则、Java/C# 技能路由、文档输出位置、验证范围和 CodeGraph 使用规则。
-- `INSTALL.md`：供 Codex、Claude、CodeBuddy、Qoder 自动安装本仓库全局规则及编码 skill 的说明。
-- `skills/java-coding-guide`：Java 编码、设计、测试与代码审查规范。
-- `skills/csharp-coding-guide`：C#/.NET 编码、设计、测试与代码审查规范。
-- `skills/docs-tech-solution`：设计概要类技术文档生成技能。
-- `skills/service-overview`：后端服务概览与新人上手文档生成技能。
-- `skills/query-service-config`：服务实际生效配置的检测、拉取、合并和说明技能。
+- `AGENTS.md`：全局工作约定，包括执行原则、技能路由、文档输出位置、验证范围和代码图谱使用规则。
+- `INSTALL.md`：安装流程说明，定义技能清单读取、用户勾选、客户端选择、安装与校验步骤。
+- `skills/`：可按需安装的技能集合。每个一级子目录是一个独立技能，入口为 `SKILL.md`；当前有哪些技能以目录实际内容为准，本文件不预先指定。
 
 ## 目录结构
 
@@ -20,32 +16,32 @@ ai-coding/
 |-- INSTALL.md
 |-- README.md
 `-- skills/
-    |-- csharp-coding-guide/
-    |-- docs-tech-solution/
-    |-- java-coding-guide/
-    |-- query-service-config/
-    `-- service-overview/
+    `-- <技能名>/
+        |-- SKILL.md
+        `-- 其余资源文件（按需）
 ```
 
-每个技能以独立目录保存，入口为 `SKILL.md`，并按需要包含 `agents/`、`references/`、`scripts/` 或其他配套资源。目录内文件应作为一个整体维护和分发。
+技能目录名即技能名，安装时以 `skills/` 下实际存在的目录为准；目录内文件作为一个整体维护和分发。
 
-## 使用方式
+## 安装
 
-在已打开本仓库的 Codex、Claude、CodeBuddy 或 Qoder 会话中发送：
+复制下面这一条发送给当前 AI 助手即可：
 
 ```text
-请查看 INSTALL.md，并严格按其中与当前客户端匹配的步骤，为当前用户安装全局规则以及以下 skill：java-coding-guide、csharp-coding-guide。
+请从 https://github.com/Gouxinlijian/ai-coding.git 获取本仓库（当前工作区已是该仓库则直接使用），阅读 README.md 和 INSTALL.md，先扫描 skills/ 列出全部技能的名称与用途，再用选择题让我勾选要安装哪些技能、以及要安装到哪些客户端（Codex / Claude / CodeBuddy / Qoder）。在我明确选择之前，不要安装任何内容，也不要替我预设技能、客户端或安装范围。
 ```
 
-AI 会先询问用户称呼，再自行完成拉取、备份、安装和校验。
+AI 会先列出技能清单，再询问你的称呼，然后按你的勾选完成拉取、备份、安装和校验；未勾选的技能和客户端不会被改动。全局规则中包含 Java、C# 等编码技能的路由，未安装对应技能时该路由不会生效，不影响其他技能。
 
-如需只安装部分 skill，把命令中的 skill 列表替换为实际需要的名称，例如：
+## 更新
+
+之前安装过、需要同步仓库最新版本时，复制下面这一条：
 
 ```text
-请查看 INSTALL.md，并按 CodeBuddy 的步骤为我安装全局规则和 java-coding-guide。
+请从 https://github.com/Gouxinlijian/ai-coding.git 获取本仓库最新版本（当前工作区已是该仓库则先拉取更新），阅读 README.md 和 INSTALL.md 的更新流程。先对比本机已安装技能与 skills/ 目录，列出「技能名｜本机状态｜与仓库差异」清单，再用选择题让我勾选要更新哪些技能、更新到哪些客户端（Codex / Claude / CodeBuddy / Qoder），并单独确认是否同时更新全局规则。更新前先备份，在我明确选择之前不要覆盖任何内容，也不要替我预设技能、客户端或更新范围。
 ```
 
-平台名可按实际客户端替换为 Codex、Claude、CodeBuddy 或 Qoder；未指定平台时，由 AI 根据当前客户端自动匹配对应章节。
+更新只覆盖你勾选的内容：未勾选的技能、仅本机存在的技能、其他客户端的配置都不会被删除或修改；覆盖前的备份可用于回滚。
 
 ## 源版本约定
 
@@ -55,4 +51,4 @@ AI 会先询问用户称呼，再自行完成拉取、备份、安装和校验�
 
 - 不提交密码、Token、密钥、连接串或其他敏感配置。
 - 可公开复用的技能不得包含真实姓名、私人称呼、本机绝对路径或其他个人信息。
-- 修改技能时保持 `SKILL.md` 中的引用与实际文件同步，并在提交前运行技能格式和资源完整性检查。
+- 新增或修改技能时保持 `SKILL.md` 中的引用与实际文件同步；本文件不维护技能清单，避免与实际目录不一致。
