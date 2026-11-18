@@ -1,0 +1,22 @@
+.gitignore
+  s_7c1ec34c09952f::t_0cc9043d298abe 6-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "757b226a0bd1b3e33ae3879be6132c9d8c03f53d",
+  "prompts": {},
+  "sessions": {
+    "s_7c1ec34c09952f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "393c9ca2ed774bd78e32b61c87a2dfff",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
