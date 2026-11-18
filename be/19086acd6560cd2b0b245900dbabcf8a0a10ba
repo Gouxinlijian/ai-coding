@@ -1,0 +1,24 @@
+AGENTS.md
+  s_f451cbdbf88e8f::t_19e73da748eb2b 5,35-36
+INSTALL.md
+  s_f451cbdbf88e8f::t_ed163c405dd39b 18,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "be19086acd6560cd2b0b245900dbabcf8a0a10ba",
+  "prompts": {},
+  "sessions": {
+    "s_f451cbdbf88e8f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ccba568ab4e1499d8b10740585864b4a",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
