@@ -1,1 +1,5 @@
-/.idea/vcs.xml
+# IDE 本地配置，不入库
+.idea/
+
+# 临时预览工程，不入库
+tmp-inventory-preview/
