@@ -92,7 +92,7 @@ description: 显式启用的测试用例生成技能，只在用户点名本技�
 
 按 `references/output-templates.md`：
 
-- 默认用“功能场景清单”结构：页面 → 功能 → 场景 → 操作 / 预期，全部是功能语义。
+- 默认用“功能场景清单”结构：业务对象或管理模块 → 功能 → 场景 → 操作 / 预期。同一对象的多个功能收在一个二级节点下，不要拆成多个二级节点。
 - Markdown 默认写入 `docs/local/{业务范围}/`，文件名 `{需求名}-测试用例[-vMMdd_HHmmss].md`，同名不覆盖。
 - XMind：`python {SKILL_DIR}/scripts/md_to_xmind.py <input.md> <output.xmind> [标题] [--tables expand|skip]`；清单结构直接转换即可。
 - 用例标题规范：`{页面} - {功能} - {场景}` 或“在{页面}，{操作}时，应{结果}”。
