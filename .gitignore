@@ -3,3 +3,6 @@
 
 # 临时预览工程，不入库
 tmp-inventory-preview/
+
+# 本地业务文档，不入库
+docs/local/
