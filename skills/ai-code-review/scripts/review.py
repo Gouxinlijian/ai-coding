@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import bisect
 import fnmatch
 import json
 import os
@@ -14,7 +15,7 @@ from collections import Counter
 from datetime import datetime
 from html import escape
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple
 
 SEVERITIES = ("critical", "high", "medium", "low", "info")
 SEVERITY_PENALTY = {"critical": 40, "high": 25, "medium": 12, "low": 4, "info": 1}
@@ -23,6 +24,20 @@ SEVERITY_LABELS = {"critical": "严重", "high": "高", "medium": "中", "low": 
 STATUS_LABELS = {"complete": "完成", "incomplete": "不完整", "preview": "预览"}
 GATE_LABELS = {"passed": "通过", "failed": "未通过", "not_evaluated": "未评估"}
 SOURCE_LABELS = {"working-tree": "工作区变更", "commit": "单个提交", "range": "提交区间", "scan": "整文件扫描"}
+BUILTIN_RULES: List[Tuple[re.Pattern, str, str, str, str, str, str]] = [
+    (re.compile(r"(?i)(?:api[_-]?key|access[_-]?token|secret|password|passwd|private[_-]?key)\s*[:=]\s*[\"'][^\"']{8,}[\"']|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"), "security.secret-generic", "security", "critical", "Credential-like material is present in source; the value is intentionally omitted from this report.", "Remove it, rotate the credential, and load it from a secret manager or protected environment.", "high"),
+    (re.compile(r"(?i)(?:execute|query|raw|cursor)\s*\([^\n]*(?:\+|%s|\.format\(|f[\"'])"), "security.sql-concat", "security", "high", "SQL appears to be assembled from a dynamic value, which can enable injection.", "Use parameterized queries or a trusted query builder; validate inputs at the boundary.", "medium"),
+    (re.compile(r"(?i)\b(?:eval|exec)\s*\(|new\s+Function\s*\("), "security.dynamic-eval", "security", "high", "Dynamic code evaluation makes input-to-code execution possible.", "Remove dynamic evaluation or replace it with a closed allowlist of operations.", "high"),
+    (re.compile(r"(?i)\b(?:child_process\.(?:exec|execSync)|os\.system|subprocess\.(?:run|Popen|call))\s*\([^\n]*(?:\+|format\(|f[\"']|shell\s*=\s*True)"), "security.command-injection", "security", "high", "A process command is built from dynamic input or enables shell interpretation.", "Use an argument array, disable shell interpretation, and validate against an allowlist.", "medium"),
+    (re.compile(r"(?i)(?:innerHTML|outerHTML|insertAdjacentHTML)\s*=|dangerouslySetInnerHTML"), "security.xss-sink", "security", "high", "Unescaped HTML is written to a browser sink.", "Escape untrusted content or use a safe DOM/template API with an explicit sanitizer.", "high"),
+    (re.compile(r"(?i)\b(?:md5|sha1)\s*\(|(?:random\.random|Math\.random)\s*\("), "security.weak-crypto", "security", "medium", "A weak hash or non-cryptographic random source is used.", "Use a modern approved hash and a cryptographically secure random source for security-sensitive values.", "medium"),
+    (re.compile(r"(?i)\b(?:except\s+Exception|catch\s*\([^)]*Exception|catch\s*\([^)]*Throwable)\s*[:{]"), "bug.broad-exception", "bug", "medium", "A broad exception handler can hide unrelated failures.", "Catch the narrow expected exception, preserve context, and handle or rethrow it explicitly.", "medium"),
+    (re.compile(r"(?i)\b(?:TODO|FIXME|HACK)\b"), "maintainability.todo-risk", "maintainability", "low", "An unresolved TODO/FIXME/HACK marker remains in the reviewed code.", "Resolve the work, link a tracked issue, or remove the marker when it is no longer actionable.", "high"),
+    (re.compile(r"(?i)\b(?:print|println|console\.log|System\.out\.print)\s*\("), "style.debug-output", "style", "low", "Direct console output can bypass structured logging and leak noisy diagnostics.", "Use the project logging abstraction and include appropriate context and log level.", "medium"),
+    (re.compile(r"(?i)\b(?:const|let|var|int|string|boolean|bool|auto)\s+[a-zA-Z_]\s*(?:=|;|,)"), "style.naming", "style", "low", "A one-letter local name reduces readability and makes maintenance harder.", "Use a descriptive name that communicates the value's role and scope.", "medium"),
+    (re.compile(r"(?i)\b(?:open|FileInputStream|FileOutputStream|Socket|createConnection|connect)\s*\("), "resource.unclosed-resource", "resource", "medium", "A manually opened resource is visible; no close boundary is proven locally.", "Use a context manager, try-with-resources, or an explicit finally/close path.", "low"),
+    (re.compile(r"(?i)\b(?:for|while)\b[^\n]*\{?\s*$"), "performance.loop-work", "performance", "low", "Loop work may be repeated for each item; inspect complexity and avoid repeated I/O or lookup.", "Move invariant work outside the loop and use indexed or batched operations where appropriate.", "low"),
+]
 TEXT_EXTENSIONS = {
     ".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".cs", ".css", ".dart", ".fs", ".go", ".graphql",
     ".hcl", ".hh", ".java", ".jl", ".js", ".json", ".jsx", ".kt", ".kts", ".lua", ".m", ".mm",
@@ -32,6 +47,7 @@ TEXT_EXTENSIONS = {
 PROTECTED = [".env", ".env.*", "**/.ssh/**", "**/id_rsa", "**/id_dsa", "**/id_ecdsa", "**/id_ed25519", "**/.netrc", "**/_netrc", "**/.npmrc", "**/.pypirc", "**/.dockercfg"]
 IGNORED_DIRS = {".git", ".idea", ".venv", "__pycache__", "node_modules", "vendor", "target", "dist", "build", ".gradle", ".terraform", "coverage", "bin"}
 GENERATED = ["**/*.generated.*", "**/*.gen.go", "**/*.pb.go", "**/*.pb.h", "**/*.designer.cs", "**/migrations/*"]
+DOC_PATTERNS = ["docs/**", "**/docs/**", "**/ai-tasks/**", "**/*.md", "**/*.mdx", "**/*.rst", "**/*.adoc"]
 
 
 def eprint(message: str) -> None:
@@ -81,6 +97,10 @@ def protected(path: str) -> bool:
 def ignored(path: str) -> bool:
     parts = set(Path(path).parts)
     return bool(parts & IGNORED_DIRS) or any(is_match(path, pattern) for pattern in GENERATED)
+
+
+def documentation(path: str) -> bool:
+    return any(is_match(path, pattern) for pattern in DOC_PATTERNS)
 
 
 def load_config(repo: Optional[Path], explicit: Optional[str]) -> Tuple[Dict[str, Any], str]:
@@ -176,6 +196,27 @@ def changed_ranges(repo: Path, command: List[str], refs: List[str], path: str) -
     return ranges
 
 
+def changed_lines(repo: Path, command: List[str], refs: List[str]) -> Dict[str, List[range]]:
+    patch = git_bytes(["-c", "core.quotePath=false", *diff_options(command), "--no-color", "--unified=0", "--inter-hunk-context=0", *refs, "--"], repo)
+    ranges: Dict[str, List[range]] = {}
+    current: Optional[str] = None
+    for line in patch.split(b"\n"):
+        if line.startswith(b"+++ "):
+            target = line[4:].decode("utf-8", errors="replace").rstrip("\r")
+            current = None if target == "/dev/null" else (target[2:] if target.startswith("b/") else target)
+            if current is not None:
+                ranges.setdefault(current, [])
+            continue
+        if current is None or not line.startswith(b"@@"):
+            continue
+        match = re.match(rb"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@", line)
+        if match:
+            start, count = int(match.group(1)), int(match.group(2) or b"1")
+            if count:
+                ranges[current].append(range(start, start + count))
+    return ranges
+
+
 def split_paths(value: Optional[str]) -> List[str]:
     return [item.strip() for item in (value or "").split(",") if item.strip()]
 
@@ -184,9 +225,10 @@ def scan_root(cwd: Path) -> Path:
     return next((parent for parent in (cwd, *cwd.parents) if (parent / ".git").exists()), cwd)
 
 
-def scan_candidates(root: Path, cwd: Path, raw_paths: List[str], selected: List[str]) -> List[str]:
+def scan_candidates(root: Path, cwd: Path, raw_paths: List[str], selected: List[str]) -> Tuple[List[str], int]:
     specs = [cwd / item for item in raw_paths] + [root / item for item in selected]
     found = set()
+    skipped: Set[Path] = set()
     for spec in specs or [root]:
         spec = Path(os.path.abspath(spec))
         if spec.exists() or spec.is_symlink():
@@ -205,14 +247,22 @@ def scan_candidates(root: Path, cwd: Path, raw_paths: List[str], selected: List[
                 def walk_error(error: OSError) -> None:
                     raise error
                 for folder, directories, names in os.walk(match, onerror=walk_error):
-                    directories[:] = [name for name in directories if name != ".git"]
+                    kept = []
+                    for name in directories:
+                        if name in IGNORED_DIRS:
+                            skipped.add(Path(folder) / name)
+                        else:
+                            kept.append(name)
+                    directories[:] = kept
                     found.update(Path(folder) / name for name in names)
-    return sorted(path.relative_to(root).as_posix() if path.is_relative_to(root) else path.as_posix() for path in found)
+    return sorted(path.relative_to(root).as_posix() if path.is_relative_to(root) else path.as_posix() for path in found), len(skipped)
 
 
 def path_decision(path: str, config: Dict[str, Any]) -> Tuple[str, str]:
     if protected(path):
         return "sensitive_path", "protected path excluded before user rules"
+    if documentation(path):
+        return "excluded", "documentation or task metadata excluded"
     if any(is_match(path, pattern) for pattern in config.get("exclude", [])):
         return "excluded", "matched configured exclude"
     includes = config.get("include", [])
@@ -260,29 +310,20 @@ def finding(rule_id: str, category: str, severity: str, path: str, line: int, me
     return {"rule_id": rule_id, "category": category, "severity": severity, "path": path, "start_line": max(1, line), "end_line": max(1, end_line or line), "message": message, "suggestion": suggestion, "confidence": confidence, "source": source}
 
 
-def builtins(path: str, lines: List[str]) -> List[Dict[str, Any]]:
+def builtins(path: str, lines: List[str], allowed: Optional[Set[int]] = None) -> List[Dict[str, Any]]:
     out: List[Dict[str, Any]] = []
     text = "\n".join(lines)
-    def each(pattern: str, callback):
-        for number, line in enumerate(lines, 1):
-            if re.search(pattern, line):
-                out.append(callback(number, line))
-    secret = re.compile(r"(?i)(?:api[_-]?key|access[_-]?token|secret|password|passwd|private[_-]?key)\s*[:=]\s*[\"'][^\"']{8,}[\"']|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----")
-    each(secret.pattern, lambda n, _: finding("security.secret-generic", "security", "critical", path, n, "Credential-like material is present in source; the value is intentionally omitted from this report.", "Remove it, rotate the credential, and load it from a secret manager or protected environment.", confidence="high"))
-    each(r"(?i)(?:execute|query|raw|cursor)\s*\([^\n]*(?:\+|%s|\.format\(|f[\"'])", lambda n, _: finding("security.sql-concat", "security", "high", path, n, "SQL appears to be assembled from a dynamic value, which can enable injection.", "Use parameterized queries or a trusted query builder; validate inputs at the boundary.", confidence="medium"))
-    each(r"(?i)\b(?:eval|exec)\s*\(|new\s+Function\s*\(", lambda n, _: finding("security.dynamic-eval", "security", "high", path, n, "Dynamic code evaluation makes input-to-code execution possible.", "Remove dynamic evaluation or replace it with a closed allowlist of operations.", confidence="high"))
-    each(r"(?i)\b(?:child_process\.(?:exec|execSync)|os\.system|subprocess\.(?:run|Popen|call))\s*\([^\n]*(?:\+|format\(|f[\"']|shell\s*=\s*True)", lambda n, _: finding("security.command-injection", "security", "high", path, n, "A process command is built from dynamic input or enables shell interpretation.", "Use an argument array, disable shell interpretation, and validate against an allowlist.", confidence="medium"))
-    each(r"(?i)(?:innerHTML|outerHTML|insertAdjacentHTML)\s*=|dangerouslySetInnerHTML", lambda n, _: finding("security.xss-sink", "security", "high", path, n, "Unescaped HTML is written to a browser sink.", "Escape untrusted content or use a safe DOM/template API with an explicit sanitizer.", confidence="high"))
-    each(r"(?i)\b(?:md5|sha1)\s*\(|(?:random\.random|Math\.random)\s*\(", lambda n, _: finding("security.weak-crypto", "security", "medium", path, n, "A weak hash or non-cryptographic random source is used.", "Use a modern approved hash and a cryptographically secure random source for security-sensitive values.", confidence="medium"))
-    each(r"(?i)\b(?:except\s+Exception|catch\s*\([^)]*Exception|catch\s*\([^)]*Throwable)\s*[:{]", lambda n, _: finding("bug.broad-exception", "bug", "medium", path, n, "A broad exception handler can hide unrelated failures.", "Catch the narrow expected exception, preserve context, and handle or rethrow it explicitly.", confidence="medium"))
-    each(r"(?i)\b(?:TODO|FIXME|HACK)\b", lambda n, _: finding("maintainability.todo-risk", "maintainability", "low", path, n, "An unresolved TODO/FIXME/HACK marker remains in the reviewed code.", "Resolve the work, link a tracked issue, or remove the marker when it is no longer actionable.", confidence="high"))
-    each(r"(?i)\b(?:print|println|console\.log|System\.out\.print)\s*\(", lambda n, _: finding("style.debug-output", "style", "low", path, n, "Direct console output can bypass structured logging and leak noisy diagnostics.", "Use the project logging abstraction and include appropriate context and log level.", confidence="medium"))
-    each(r"(?i)\b(?:const|let|var|int|string|boolean|bool|auto)\s+[a-zA-Z_]\s*(?:=|;|,)", lambda n, _: finding("style.naming", "style", "low", path, n, "A one-letter local name reduces readability and makes maintenance harder.", "Use a descriptive name that communicates the value's role and scope.", confidence="medium"))
-    each(r"(?i)\b(?:open|FileInputStream|FileOutputStream|Socket|createConnection|connect)\s*\(", lambda n, _: finding("resource.unclosed-resource", "resource", "medium", path, n, "A manually opened resource is visible; no close boundary is proven locally.", "Use a context manager, try-with-resources, or an explicit finally/close path.", confidence="low"))
-    each(r"(?i)\b(?:for|while)\b[^\n]*\{?\s*$", lambda n, _: finding("performance.loop-work", "performance", "low", path, n, "Loop work may be repeated for each item; inspect complexity and avoid repeated I/O or lookup.", "Move invariant work outside the loop and use indexed or batched operations where appropriate.", confidence="low"))
-    for n, line in enumerate(lines, 1):
-        if len(line.rstrip("\n")) > 140:
-            out.append(finding("style.long-line", "style", "info", path, n, "Line exceeds 140 characters and may reduce readability or hide logic.", "Wrap the expression or extract a named value without changing behavior.", confidence="high"))
+    if allowed is None:
+        numbers: Iterable[int] = range(1, len(lines) + 1)
+    else:
+        numbers = sorted(number for number in allowed if 1 <= number <= len(lines))
+    for pattern, rule_id, category, severity, message, suggestion, confidence in BUILTIN_RULES:
+        for number in numbers:
+            if pattern.search(lines[number - 1]):
+                out.append(finding(rule_id, category, severity, path, number, message, suggestion, confidence=confidence))
+    for number in numbers:
+        if len(lines[number - 1].rstrip("\n")) > 140:
+            out.append(finding("style.long-line", "style", "info", path, number, "Line exceeds 140 characters and may reduce readability or hide logic.", "Wrap the expression or extract a named value without changing behavior.", confidence="high"))
     if len(lines) > 300:
         out.append(finding("maintainability.long-file", "maintainability", "low", path, 1, "The file is large enough to increase review and change risk.", "Split cohesive responsibilities into smaller modules while preserving a stable public interface.", confidence="high", end_line=min(len(lines), 3)))
     if re.search(r"(?m)^\s*(?:def|function|func|public\s+\w+\s+\w+|private\s+\w+\s+\w+)\b", text) and len(lines) > 150:
@@ -293,10 +334,11 @@ def builtins(path: str, lines: List[str]) -> List[Dict[str, Any]]:
 def custom_findings(path: str, lines: List[str], rules: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     out = []
     text = "\n".join(lines)
+    newlines = [index for index, char in enumerate(text) if char == "\n"]
     for rule in rules:
         regex = re.compile(str(rule["pattern"]), regex_flags(rule.get("flags", "")))
         for match in regex.finditer(text):
-            line = text.count("\n", 0, match.start()) + 1
+            line = bisect.bisect_left(newlines, match.start()) + 1
             out.append(finding(str(rule["id"]), str(rule["category"]), str(rule["severity"]), path, line, str(rule["message"]), str(rule["suggestion"]), source="custom", confidence="high"))
     return out
 
@@ -327,10 +369,11 @@ def execute(args: argparse.Namespace) -> Tuple[Dict[str, Any], int, Path]:
     refs: List[str] = []
     snapshot: Optional[str] = None
     untracked = set()
+    skipped_dirs = 0
     if mode == "scan":
         cwd = Path.cwd().resolve()
         repo = scan_root(cwd)
-        paths = scan_candidates(repo, cwd, split_paths(args.path), selected)
+        paths, skipped_dirs = scan_candidates(repo, cwd, split_paths(args.path), selected)
         if not paths:
             raise ValueError("scan scope contains no candidate files")
     else:
@@ -343,11 +386,14 @@ def execute(args: argparse.Namespace) -> Tuple[Dict[str, Any], int, Path]:
             is_match(path, item) or path.startswith(item.replace("\\", "/").removeprefix("./").rstrip("/") + "/")
             for item in selected
         ))
+    ranges_by_path = changed_lines(repo, command, refs) if mode == "diff" and not args.preview else {}
     config, config_source = load_config(repo, args.config)
     limit = config.get("max_file_bytes", 500000)
     files = []
     findings = []
     warnings = []
+    if skipped_dirs:
+        warnings.append(f"扫描跳过 {skipped_dirs} 个依赖或构建目录")
     for path in paths:
         decision, reason = path_decision(path, config)
         rules_source = None
@@ -359,10 +405,15 @@ def execute(args: argparse.Namespace) -> Tuple[Dict[str, Any], int, Path]:
                     rules_source = "custom" if rules else config_source
                     if not args.preview:
                         lines = [line.removesuffix("\r") for line in content.decode("utf-8", errors="replace").removesuffix("\n").split("\n")] if content else []
-                        current = builtins(path, lines) + custom_findings(path, lines, rules)
+                        allowed: Optional[Set[int]] = None
                         if mode == "diff" and path not in untracked:
-                            ranges = changed_ranges(repo, command, refs, path)
-                            current = [item for item in current if any(item["start_line"] in span for span in ranges)]
+                            spans = ranges_by_path.get(path)
+                            if spans is None:
+                                spans = changed_ranges(repo, command, refs, path)
+                            allowed = {number for span in spans for number in span}
+                        current = builtins(path, lines, allowed) + custom_findings(path, lines, rules)
+                        if allowed is not None:
+                            current = [item for item in current if item["start_line"] in allowed]
                         findings.extend(current)
             except (OSError, RuntimeError) as exc:
                 decision, reason = "failed", str(exc)
@@ -372,6 +423,13 @@ def execute(args: argparse.Namespace) -> Tuple[Dict[str, Any], int, Path]:
             entry["ruleset"] = rules_source
         files.append(entry)
     findings = dedupe(findings)
+    locations: Dict[str, List[str]] = {}
+    for item in findings:
+        locations.setdefault(item["rule_id"], []).append(f"{item['path']}:{item['start_line']}")
+    for item in findings:
+        current = f"{item['path']}:{item['start_line']}"
+        item["impact_scope"] = "文件内"
+        item["related"] = [location for location in locations[item["rule_id"]] if location != current][:5]
     counts = Counter(item["severity"] for item in findings)
     categories = Counter(item["category"] for item in findings)
     threshold = args.fail_on or config.get("fail_on", "high")
@@ -454,7 +512,9 @@ def markdown_report(report: Dict[str, Any], code: int) -> str:
     gate_status = GATE_LABELS.get(gate["status"], gate["status"])
     source = SOURCE_LABELS.get(scope["source"], scope["source"])
     lines = [
-        "# 代码评审报告（引擎结果）",
+        "# 代码评审报告（引擎原始结果）",
+        "",
+        "> 本文件由引擎生成，仅作证据，不是交付报告。交付报告由评审者按技能模板另存为 review-<时间戳>.md。",
         "",
         f"- 状态：{status}",
         f"- 范围：{source}（{scope['mode']}）",
@@ -479,6 +539,8 @@ def markdown_report(report: Dict[str, Any], code: int) -> str:
             lines.append("已评审文件中未发现问题。")
     else:
         for severity in SEVERITIES:
+            if severity in {"low", "info"}:
+                continue
             items = [item for item in report["findings"] if item["severity"] == severity]
             if not items:
                 continue
@@ -488,8 +550,15 @@ def markdown_report(report: Dict[str, Any], code: int) -> str:
                 rule = markdown_text(item["rule_id"])
                 lines.append(f"- **{location}** — {markdown_text(item['message'])}")
                 lines.append(f"  - 规则：{rule}；来源：engine（{item['source']}）；置信度：{item['confidence']}")
+                lines.append(f"  - 影响范围：{item['impact_scope']}（引擎仅检查单文件）")
+                if item["related"]:
+                    lines.append(f"  - 关联位置：{'、'.join(markdown_text(related) for related in item['related'])}")
                 lines.append(f"  - 建议：{markdown_text(item['suggestion'])}")
             lines.append("")
+        hidden = [item for item in report["findings"] if item["severity"] in {"low", "info"}]
+        if hidden:
+            hidden_counts = Counter(item["severity"] for item in hidden)
+            lines.extend(["", f"低与提示级命中 {len(hidden)} 条（低 {hidden_counts.get('low', 0)}，提示 {hidden_counts.get('info', 0)}），未逐条列出。"])
 
     if report["warnings"]:
         lines.extend(["", "## 告警", ""])
@@ -504,8 +573,8 @@ def write_markdown_report(root: Path, report: Dict[str, Any], code: int) -> Path
         raise ValueError(f"评审报告目录不能指向其他位置：{directory}")
     content = markdown_report(report, code)
     directory.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%dT%H%M%S")
-    path = resolved / f"review-{stamp}.md"
+    stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    path = resolved / f"review-{stamp}.engine.md"
     suffix = 1
     while True:
         try:
@@ -514,7 +583,7 @@ def write_markdown_report(root: Path, report: Dict[str, Any], code: int) -> Path
             return path
         except FileExistsError:
             suffix += 1
-            path = resolved / f"review-{stamp}-{suffix}.md"
+            path = resolved / f"review-{stamp}-{suffix}.engine.md"
 
 
 def rules_check(args: argparse.Namespace) -> int:
