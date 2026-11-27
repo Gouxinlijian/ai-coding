@@ -1,0 +1,64 @@
+skills/ai-code-review/scripts/review.py
+  s_3949f16c7ae5fe::t_6927cfface5d01 102-105
+  s_3949f16c7ae5fe::t_9c7ac2142577de 199-219
+  s_3949f16c7ae5fe::t_79e3daf6dfbe7c 341
+  s_3949f16c7ae5fe::t_0a5abd39e6bae3 313,316-326,337
+  s_3949f16c7ae5fe::t_24ea18e8e4654a 577
+  s_3949f16c7ae5fe::t_198408c771d52f 50
+  s_3949f16c7ae5fe::t_205d3d342a7fe9 389
+  s_3949f16c7ae5fe::t_6b401b915a203d 408,410-416
+  s_3949f16c7ae5fe::t_c62ed48c066ebc 431
+  s_3949f16c7ae5fe::t_6a2d9328215514 515-517
+  s_3949f16c7ae5fe::t_2912f01aab8b57 18
+  s_3949f16c7ae5fe::t_e31e49f72a427e 372,376,395-396
+  s_3949f16c7ae5fe::t_c3395f46d1586f 27-40
+  s_3949f16c7ae5fe::t_27f28ed18e567e 554-555
+  s_3949f16c7ae5fe::t_a0665663d7291c 553
+  s_3949f16c7ae5fe::t_fab185dce4d14e 6
+  s_3949f16c7ae5fe::t_b6974e2e4f58b8 264-265
+  s_3949f16c7ae5fe::t_0097bed9fad824 576
+  s_3949f16c7ae5fe::t_f00da9fa6c6cd6 228,231,250-256,258
+  s_3949f16c7ae5fe::t_800ed2f808d2da 586
+  s_3949f16c7ae5fe::t_b6ff1eb3e00d3b 542-543,558-561
+  s_3949f16c7ae5fe::t_8122073a76eaa1 426-430,432
+skills/ai-code-review/references/config-schema.md
+  s_3949f16c7ae5fe::t_8eec6c64c3a641 53-55
+  s_3949f16c7ae5fe::t_f5f764f173b4fb 107
+  s_3949f16c7ae5fe::t_0f36369751297e 121
+  s_3949f16c7ae5fe::t_821312ce109699 81,83
+  s_3949f16c7ae5fe::t_946c0d932df985 108-109
+  s_3949f16c7ae5fe::t_81ca9f60ca561e 82
+  s_3949f16c7ae5fe::t_689c48d16e9ac8 112,114,122,126
+  s_3949f16c7ae5fe::t_a4ff4d6a116e5c 127
+  s_3949f16c7ae5fe::t_1e307f7f7adc66 56-59
+skills/ai-code-review/SKILL.md
+  s_3949f16c7ae5fe::t_6aa5359d80d76a 85
+  s_3949f16c7ae5fe::t_a6f38b274a1342 137
+  s_3949f16c7ae5fe::t_077990ebe5023d 6
+  s_3949f16c7ae5fe::t_8e887f6c53e0db 31
+  s_3949f16c7ae5fe::t_c37c22eda5e001 113,116
+  s_3949f16c7ae5fe::t_f538b90f68cb99 12,14,16-19,21,23,25,27-30,33,35,39-40,43-46,48,50-54,56,58,60,62-68,70,72,74,76-79,83,86,88,119,121,126-128,133,135,138-140,142,144,146-148
+  s_3949f16c7ae5fe::t_81a148b1b2830e 81
+  s_3949f16c7ae5fe::t_782e01a84b8077 90,92-100,102,104-108,110,122-125,129,131
+  s_3949f16c7ae5fe::t_ff0e926a8f43f3 3
+  s_3949f16c7ae5fe::t_09cffdf4bf3309 120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "fc7ef59345339b44122646ea8f55b4fc3c52afa2",
+  "prompts": {},
+  "sessions": {
+    "s_3949f16c7ae5fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2621c82c-074c-4e5b-82b0-dbabf43c514a",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
