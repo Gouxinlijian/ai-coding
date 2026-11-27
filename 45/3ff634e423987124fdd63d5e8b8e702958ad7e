@@ -1,0 +1,65 @@
+skills/ai-code-review/references/rule-catalog.md
+  s_3949f16c7ae5fe::t_44e09c7d7d74e5 1-37
+skills/ai-code-review/references/checklists.md
+  s_3949f16c7ae5fe::t_607f7d4338064e 1-99
+skills/ai-code-review/scripts/review.py
+  s_3949f16c7ae5fe::t_951b9246ad373c 507-517
+  s_3949f16c7ae5fe::t_7a9dff6c2906e2 581
+  s_3949f16c7ae5fe::t_2191d62968ea58 91-92
+  s_3949f16c7ae5fe::t_f056de894772d4 490
+  s_3949f16c7ae5fe::t_68e4b5647636eb 320
+  s_3949f16c7ae5fe::t_546d4c1241870a 578
+  s_3949f16c7ae5fe::t_3df8fd7a218813 1-13,15-90,93-319,321-471,473-489,491-506,518-531,533-577,579-580,582-586
+  s_3949f16c7ae5fe::t_d8a7a459735006 14
+  s_3949f16c7ae5fe::t_130072cf0ead49 472
+  s_3949f16c7ae5fe::t_a9d34e5e9d2513 532
+skills/ai-code-review/SKILL.md
+  s_3949f16c7ae5fe::t_ddb6deb4e5acc3 60-61
+  s_3949f16c7ae5fe::t_f10a781383a203 138
+  s_3949f16c7ae5fe::t_093eefde9be185 101
+  s_3949f16c7ae5fe::t_8fe8cd9b61551c 3-6,12-34,38-46,48,58,62-99,102-137,143-176
+  s_3949f16c7ae5fe::t_0d27ed8a28d656 10
+  s_3949f16c7ae5fe::t_68eb9d2b96b2d7 35-37
+  s_3949f16c7ae5fe::t_f5f437658134e4 47
+  s_3949f16c7ae5fe::t_1434f2e71af10c 2
+  s_3949f16c7ae5fe::t_fee405dbc8d47d 1
+  s_3949f16c7ae5fe::t_802507b1486fc6 7-9
+  s_3949f16c7ae5fe::t_eedd9994c139e7 11
+  s_3949f16c7ae5fe::t_9c0e7a78dda3c6 49-51,55-57
+  s_3949f16c7ae5fe::t_07a88a8fed0214 59
+  s_3949f16c7ae5fe::t_9cbaccd21d2937 100
+  s_3949f16c7ae5fe::t_3b29f2a3712f11 139-142
+  s_3949f16c7ae5fe::t_607cc134acbc7e 177-179
+README.md
+  s_3949f16c7ae5fe::t_93da8aab04acf5 144
+  s_3949f16c7ae5fe::t_47a072e2e74fee 56-58
+  s_3949f16c7ae5fe::t_7cafe0869d9ac6 11-18,22-37
+  s_3949f16c7ae5fe::t_1248698cee0c6a 86,89
+  s_3949f16c7ae5fe::t_cf221d94417c2a 19
+  s_3949f16c7ae5fe::t_f3d29df7b7696a 21
+  s_3949f16c7ae5fe::t_0b4fdaea869821 66-85,87-88,90-125
+  s_3949f16c7ae5fe::t_34abdc1c6ab1f8 9-10,20
+skills/ai-code-review/references/config-schema.md
+  s_3949f16c7ae5fe::t_d3991157c09a76 6
+  s_3949f16c7ae5fe::t_92c8bbd9a3a8a4 1-5,7-108,110-112,114-119
+  s_3949f16c7ae5fe::t_b09233b52aec06 109,113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.6",
+  "base_commit_sha": "453ff634e423987124fdd63d5e8b8e702958ad7e",
+  "prompts": {},
+  "sessions": {
+    "s_3949f16c7ae5fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2621c82c-074c-4e5b-82b0-dbabf43c514a",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Jett_Li <haitao.l@foxmail.com>",
+      "custom_attributes": {
+        "employee_email": "lihaitao@gofo.com"
+      }
+    }
+  }
+}
